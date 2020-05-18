@@ -36,8 +36,10 @@ simple Switch{
         @display("p=$xpos,$ypos");
         
         double TIMEOUT;
-        double EXB_SIZE;
+        int EXB_SIZE;
         double CREDIT_DELAY;
+        double CHANNEL_DELAY;
+        double TIME_INTERVAL;
     gates:
         input in[3];
         output out[6];
