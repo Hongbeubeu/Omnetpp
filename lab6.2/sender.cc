@@ -6,6 +6,7 @@
  */
 #include <omnetpp.h>
 #include <queue>
+#include <string>
 
 using namespace omnetpp;
 using namespace std;
@@ -84,13 +85,14 @@ void Senders::sendToExitBuffer(){
 void Senders::sendToSwitch(){
     int sendMsgId = EXB.front();
     EXB.pop();
+    char nameMessage[10];
+    strcpy(nameMessage, getName());
 
-    cMessage *sendMsg = new cMessage("sender to receiver msg");
+    cMessage *sendMsg = new cMessage(nameMessage);
+    sendMsg->addPar("msgId");
+    sendMsg->par("msgId").setLongValue(sendMsgId);
 
-    cMsgPar *msgParam = new cMsgPar("msgId");
-    msgParam->setLongValue(sendMsgId);
-    sendMsg->addPar(msgParam);
-
+    //EV << getName() << ": " << sendMsg->par("msgId").longValue() << endl;
     send(sendMsg, "out");
 }
 

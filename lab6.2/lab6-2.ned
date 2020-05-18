@@ -24,7 +24,7 @@ simple Receiver{
         double TIMEOUT;
     	double TIME_INTERVAL;
     gates:
-        input in[3];
+        input in;
         
 }
 
@@ -42,7 +42,7 @@ simple Switch{
         double TIME_INTERVAL;
     gates:
         input in[3];
-        output out[6];
+        output out[4];
 }
 
 network SenderSwitchReceiver{
@@ -82,8 +82,6 @@ network SenderSwitchReceiver{
         senderB.in <-- Channel <-- switchD.out[1];
         senderC.in <-- Channel <-- switchD.out[2];
         
-        receiverE.in[0] <-- Channel <-- switchD.out[3];
-        receiverE.in[1] <-- Channel <-- switchD.out[4];
-        receiverE.in[2] <-- Channel <-- switchD.out[5];
+        receiverE.in <-- Channel <-- switchD.out[3];
         
 }
