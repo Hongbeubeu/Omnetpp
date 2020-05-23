@@ -25,6 +25,7 @@ simple Receiver{
     	double TIME_INTERVAL;
     gates:
         input in;
+        output out;
         
 }
 
@@ -47,20 +48,20 @@ simple Switch{
 
 network SenderSwitchReceiver{
 	parameters:
-   	    senderA.xpos = 100;
-   	    senderA.ypos = 100;
+   	    sender[0].xpos = 100;
+   	    sender[0].ypos = 100;
    	    
-   	    senderB.xpos = 100;
-   	    senderB.ypos = 200;
+   	    sender[1].xpos = 100;
+   	    sender[1].ypos = 200;
    	    
-   	    senderC.xpos = 100;
-   	    senderC.ypos = 300;
+   	    sender[2].xpos = 100;
+   	    sender[2].ypos = 300;
    	    
-   	    switchD.xpos = 200;
-   	    switchD.ypos = 200;
+   	    switch.xpos = 200;
+   	    switch.ypos = 200;
    	    
-   	    receiverE.xpos = 300;
-   	    receiverE.ypos = 200;
+   	    receiver.xpos = 300;
+   	    receiver.ypos = 200;
    	    
     types:
         channel Channel extends ned.DatarateChannel{
@@ -68,20 +69,19 @@ network SenderSwitchReceiver{
         }
    
     submodules:
-        senderA: Senders;
-        senderB: Senders;
-        senderC: Senders;
-        switchD: Switch;
-        receiverE: Receiver;
+        sender[3]: Senders;
+        switch: Switch;
+        receiver: Receiver;
     connections:
-        senderA.out --> Channel --> switchD.in[0];
-        senderB.out --> Channel --> switchD.in[1];
-        senderC.out --> Channel --> switchD.in[2];
+        for i=0..2{
+            sender[i].out --> Channel --> switch.in[i];
+        }
         
-        senderA.in <-- Channel <-- switchD.out[0];
-        senderB.in <-- Channel <-- switchD.out[1];
-        senderC.in <-- Channel <-- switchD.out[2];
+        for i = 0..2{
+            switch.out[i] --> Channel --> sender[i].in;
+        }
         
-        receiverE.in <-- Channel <-- switchD.out[3];
+        switch.out++ --> Channel --> receiver.in;
+        switch.in++ <-- Channel <-- receiver.out;
         
 }

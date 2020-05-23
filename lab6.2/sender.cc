@@ -85,14 +85,9 @@ void Senders::sendToExitBuffer(){
 void Senders::sendToSwitch(){
     int sendMsgId = EXB.front();
     EXB.pop();
-    char nameMessage[10];
-    strcpy(nameMessage, getName());
-
-    cMessage *sendMsg = new cMessage(nameMessage);
+    cMessage *sendMsg = new cMessage("sender to receiver");
     sendMsg->addPar("msgId");
     sendMsg->par("msgId").setLongValue(sendMsgId);
-
-    //EV << getName() << ": " << sendMsg->par("msgId").longValue() << endl;
     send(sendMsg, "out");
 }
 

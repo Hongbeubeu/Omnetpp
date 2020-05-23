@@ -16,7 +16,7 @@ private:
     double TIME_INTERVAL;
     double CHANNEL_DELAY;
 
-    queue<int> ENB_A, ENB_B, ENB_C, EXB_E;
+    queue<int> ENB[3], EXB;
 
     //thời gian mà gói tin đầu tiên trong từng ENB muốn chuyển sang EXB
     simtime_t time_A, time_B, time_C;
@@ -43,13 +43,18 @@ void Switch::initialize(){
 
     //sự kiện gửi gói tin của switch được
     scheduleAt(simTime() + TIME_INTERVAL, new cMessage("send"));
-
 }
 
 void Switch::handleMessage(cMessage *msg){
     if(simTime() >= TIMEOUT){
         EV << "Time out" << endl;
         return;
+    }
+    if(strcmp(msg->getName(), "sender to receiver") == 0){
+        int index = msg->getSenderModule()->getIndex();
+        int payload = msg->par("msgId").longValue();
+        ENB[index].push(payload);
+        scheduleAt(simTime() + TIME_INTERVAL, new cMessage("ENB to EXB"));
     }
 
     /**
@@ -58,6 +63,7 @@ void Switch::handleMessage(cMessage *msg){
      * sinh sự kiện gửi gói tin từ ENB sang EXB sau 1 chu kỳ hoạt động của switch = chu kỳ sinh gói tin
      *
      */
+    /*
     if(strcmp(msg->getName(), "senderA") == 0){
         ENB_A.push(msg->par("msgId").longValue());
         time_A = simTime() + TIME_INTERVAL;
@@ -69,25 +75,14 @@ void Switch::handleMessage(cMessage *msg){
     }else if(strcmp(msg->getName(), "senderC") == 0){
         ENB_C.push(msg->par("msgId").longValue());
         time_C = simTime() + TIME_INTERVAL;
-        scheduleAt(time_C, new cMessage("ENB to EXB"));
-    }
 
-    /**
-     * kiểm tra nếu EXB đầy thì chỉnh thời gian gói tin muốn chuyển từ ENB sang EXB thành thời điểm hiện tại
-     */
-    if(EXB_E.size() == EXB_SIZE){
-        if(time_A < simTime())
-            time_A = simTime();
-        if(time_B < simTime())
-            time_B = simTime();
-        if(time_C < simTime())
-            time_C = simTime();
     }
-
+    /*
     /**
      * kiểm tra xem gói tin yêu cầu chuyển từ ENB sang EXB
      * chọn gói tin có id bé nhất để gửi
      */
+    /*
     if(strcmp(msg->getName(), "ENB to EXB") == 0){
         if(EXB_E.size() < EXB_SIZE){
             simtime_t time = simTime();
@@ -194,18 +189,21 @@ void Switch::handleMessage(cMessage *msg){
         }
         delete msg;
     }
-
+*/
     /**
      * kiểm tra nếu đang ở sự kiện gửi mà EXB có gói tin cần gửi
      * gửi gói tin sang receiver
      * sinh sự kiện gửi sau 1 chu kỳ hoạt động
      */
+    /*
     if(strcmp(msg->getName(), "send") == 0){
         if(!EXB_E.empty()){
             sendToReceiver();
         }
         scheduleAt(simTime() + TIME_INTERVAL, msg);
     }
+    */
+
 }
 
 /**
@@ -213,6 +211,7 @@ void Switch::handleMessage(cMessage *msg){
  * @input con trỏ char chứa tên của sender cần được thông báo ENB có chỗ trống
  * @return không
  */
+/*
 void Switch::sendSignalToSender(char *sender){
     if (strcmp(sender, "ENB_A") == 0)
         send(new cMessage("signal"), "out", 0);
@@ -221,13 +220,14 @@ void Switch::sendSignalToSender(char *sender){
     else
         send(new cMessage("signal"), "out", 2);
 }
-
+*/
 
 /**
  * gửi gói tin từ ENB sang EXB
  * @input con chỏ char chứa thông tin tên ENB có gói tin gửi đến EXB
  * @return không
  */
+/*
 void Switch::sendToExitBuffer(char *ENB){
     if (strcmp(ENB, "ENB_A") == 0){
         EV << "signal to A: " << ENB << endl;
@@ -249,11 +249,12 @@ void Switch::sendToExitBuffer(char *ENB){
         sendSignalToSender(ENB);
     }
 }
-
+*/
 /**
  * gửi gói tin đến receiver
  * @return không
  */
+/*
 void Switch::sendToReceiver(){
     int sendMsgId = EXB_E.front();
     EXB_E.pop();
@@ -265,13 +266,14 @@ void Switch::sendToReceiver(){
     sendMsg->addPar(msgParam);
 
     send(sendMsg, "out", 3);
-}
+}*/
 
 /**
  * trả về giá trị bé nhất trong 3 số
  * @input là các giá trị số nguyên cần được so sánh
  * @return giá trị bé nhất trong 3 số đầu vào
  */
+/*
 int Switch::findMin_3(int x, int y, int z){
     int min = x;
     if (y < min)
@@ -281,15 +283,17 @@ int Switch::findMin_3(int x, int y, int z){
     return min;
 }
 
-
+*/
 /**
  * trả về giá trị bé nhất trong 2 số
  * @input là các giá trị số nguyên cần được so sánh
  * @return giá trị bé nhất trong 2 số đầu vào
  */
+/*
 int Switch::findMin_2(int x, int y){
     if (x < y)
         return x;
     else
         return y;
 }
+*/
