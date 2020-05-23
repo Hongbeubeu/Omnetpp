@@ -16,6 +16,8 @@ private:
     int arrayLength;
     int intervalCount = 0;
     int sumMsg;
+
+    void sendSignalToSwitch();
 protected:
     virtual void initialize() override;
     virtual void handleMessage(cMessage *msg) override;
@@ -48,10 +50,12 @@ void Receiver::handleMessage(cMessage *msg) {
     }
 
     if (strcmp(msg->getName(), "sender to receiver msg") == 0) {
+        sendSignalToSwitch();
         EV << "Received msg" << endl;
         sumMsg++;
         receivedMsgCount[intervalCount]++;
         delete msg;
+
     }
 
     if (strcmp(msg->getName(), "nextInterval") == 0) {
@@ -60,6 +64,14 @@ void Receiver::handleMessage(cMessage *msg) {
     }
 }
 
+/**
+ * Send signal to switch when receiver received message
+ * @input no
+ * @output no
+ */
+void Receiver::sendSignalToSwitch(){
+    send(new cMessage("signal"), "out");
+}
 
 /*
  * in ra thống kê số gói tin nhận được theo từng interval
