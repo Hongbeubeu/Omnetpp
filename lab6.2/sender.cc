@@ -16,6 +16,7 @@ private:
     double TIMEOUT;
     double TIME_INTERVAL;
     double CHANNEL_DELAY;
+    double CREDIT_DELAY;
     int BUFFER_COUNTER;
     int lastMessageId = -1;
 
@@ -38,6 +39,7 @@ void Senders::initialize(){
     TIMEOUT = par("TIMEOUT").doubleValue();
     TIME_INTERVAL = par("TIME_INTERVAL").doubleValue();
     CHANNEL_DELAY = par("CHANNEL_DELAY").doubleValue();
+    CREDIT_DELAY = par("CREDIT_DELAY").doubleValue();
 
     scheduleAt(0, new cMessage("generate"));
     scheduleAt(0, new cMessage("send"));
@@ -64,6 +66,11 @@ void Senders::handleMessage(cMessage *msg){
     }
 
     if(strcmp(msg->getName(), "signal") == 0){
+        scheduleAt(simTime() + CREDIT_DELAY, new cMessage("incBuff"));
+        delete msg;
+    }
+
+    if(strcmp(msg->getName(), "incBuff") == 0){
         ++BUFFER_COUNTER;
         delete msg;
     }

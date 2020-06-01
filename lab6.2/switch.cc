@@ -39,7 +39,7 @@ void Switch::initialize(){
     isChannelBussy = false;
 
     //sự kiện gửi gói tin của switch được
-    scheduleAt(simTime() + TIME_INTERVAL, new cMessage("send"));
+    //scheduleAt(simTime() + TIME_INTERVAL, new cMessage("send"));
 }
 
 void Switch::handleMessage(cMessage *msg){
@@ -84,16 +84,23 @@ void Switch::handleMessage(cMessage *msg){
         delete msg;
     }
 
+    if(!isChannelBussy){
+        //sendToReceiver();
+        //isChannelBussy = true;
+        scheduleAt(simTime() + TIME_INTERVAL, new cMessage("send"));
+    }
+
     //Send message to receiver
+
     if(strcmp(msg->getName(), "send") == 0){
         if(!EXB.empty()){
             if(!isChannelBussy){
-                EV << "signal" << endl;
                 sendToReceiver();
                 isChannelBussy = true;
             }
         }
-        scheduleAt(simTime() + TIME_INTERVAL, msg);
+        //delete msg;
+        //scheduleAt(simTime() + TIME_INTERVAL, msg);
     }
 }
 
@@ -118,7 +125,7 @@ void Switch::sendSignalToSender(int port){
 
 /**
  * gửi gói tin từ ENB sang EXB
- * @input con chỏ char chứa thông tin tên ENB có gói tin gửi đến EXB
+ * @input không
  * @return không
  */
 

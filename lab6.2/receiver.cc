@@ -77,13 +77,13 @@ void Receiver::sendSignalToSwitch(){
  * in ra thống kê số gói tin nhận được theo từng interval
  */
 void Receiver::finish(){
+    for (int i = 0; i < arrayLength; i++) {
+        EV << "interval " << i << ", received " << receivedMsgCount[i] << " messages" << endl;
+    }
     EV << "INTERVAL: " << TIME_INTERVAL << endl;
     EV << "SUM INTERVAL: " << intervalCount << endl;
     EV << "SUM MESSAGE: " << sumMsg << endl;
     EV << "AVERAGE: " << sumMsg/TIMEOUT << endl;
-    for (int i = 0; i < arrayLength; i++) {
-        EV << "interval " << i << ", received " << receivedMsgCount[i] << " messages" << endl;
-    }
 }
 
 

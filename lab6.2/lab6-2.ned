@@ -9,6 +9,7 @@ simple Senders{
         double TIMEOUT;
         double TIME_INTERVAL;
         double CHANNEL_DELAY;
+        double CREDIT_DELAY;
     gates:
         input in;
     	output out;
@@ -38,7 +39,6 @@ simple Switch{
         
         double TIMEOUT;
         int EXB_SIZE;
-        double CREDIT_DELAY;
         double CHANNEL_DELAY;
         double TIME_INTERVAL;
     gates:
@@ -82,6 +82,6 @@ network SenderSwitchReceiver{
         }
         
         switch.out++ --> Channel --> receiver.in;
-        switch.in++ <-- Channel <-- receiver.out;
+        switch.in++ <-- receiver.out;
         
 }
