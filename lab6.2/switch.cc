@@ -39,7 +39,9 @@ void Switch::initialize(){
     isChannelBussy = false;
 
     //sự kiện gửi gói tin của switch được
-    //scheduleAt(simTime() + TIME_INTERVAL, new cMessage("send"));
+    scheduleAt(0 + TIME_INTERVAL, new cMessage("send"));
+    scheduleAt(0 + TIME_INTERVAL, new cMessage("nextPeriod"));
+
 }
 
 void Switch::handleMessage(cMessage *msg){
@@ -48,59 +50,43 @@ void Switch::handleMessage(cMessage *msg){
         return;
     }
 
+    const char * eventName = msg->getName();
+
     /**
      * lấy id của gói tin mà các sender gửi lên
      * lưu các id vào ENB tương ứng
      * sinh sự kiện gửi gói tin từ ENB sang EXB sau 1 chu kỳ hoạt động của switch = chu kỳ sinh gói tin
      */
-    if(strcmp(msg->getName(), "sender to receiver") == 0){
+    if(strcmp(eventName, "sender to receiver") == 0){
         int index = msg->getSenderModule()->getIndex();
         int payload = msg->par("msgId").longValue();
         ENB[index].push(payload);
-        cMessage *newMsg = new cMessage("ENB to EXB");
-        newMsg->addPar("senderId");
-        newMsg->par("senderId").setLongValue(payload);
-        scheduleAt(simTime() + TIME_INTERVAL, newMsg);
+        return;
     }
 
-    /**
-     * kiểm tra xem gói tin yêu cầu chuyển từ ENB sang EXB
-     * chọn gói tin có id bé nhất để gửi
-     */
-
-    if(strcmp(msg->getName(), "ENB to EXB") == 0){
+    //Kiểm tra gói tin muốn sang cổng EXB theo chu kỳ hoạt động của switch
+    if(strcmp(eventName, "nextPeriod")){
         if(EXB.size() < EXB_SIZE){
-            if(checkENB()){
-                EV << "Send to Exit buffer!" << endl;
-                sendToExitBuffer();
-                delete msg;
-            }
+            sendToExitBuffer();
         }
     }
 
     //Set channel status if send success message
-    if(strcmp(msg->getName(), "signal") == 0){
+    if(strcmp(eventName, "signal") == 0){
         isChannelBussy = false;
         delete msg;
     }
 
-    if(!isChannelBussy){
-        //sendToReceiver();
-        //isChannelBussy = true;
-        scheduleAt(simTime() + TIME_INTERVAL, new cMessage("send"));
-    }
-
     //Send message to receiver
 
-    if(strcmp(msg->getName(), "send") == 0){
+    if(strcmp(eventName, "send") == 0){
         if(!EXB.empty()){
             if(!isChannelBussy){
                 sendToReceiver();
                 isChannelBussy = true;
             }
         }
-        //delete msg;
-        //scheduleAt(simTime() + TIME_INTERVAL, msg);
+        scheduleAt(simTime() + TIME_INTERVAL, msg);
     }
 }
 
@@ -121,7 +107,6 @@ bool Switch::checkENB(){
 void Switch::sendSignalToSender(int port){
     send(new cMessage("signal"), "out", port);
 }
-
 
 /**
  * gửi gói tin từ ENB sang EXB
